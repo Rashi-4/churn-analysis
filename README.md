@@ -46,15 +46,13 @@ A complete ML pipeline that:
 ---
 
 ## Team Members & Roles
-
 | Name | Role | Responsibilities |
-|---|---|---|
-| Rashi Arora | Team Lead & ML | Model training, SHAP integration, project coordination |
-| Shashwat Tiwari | Backend Developer | FastAPI endpoints, API design, backend integration |
-| Radhika Gupta | Frontend Developer | React dashboard, UI/UX, data visualization |
+|------|------|------------------|
+| Rashi Arora | Team Lead & Backend Developer | FastAPI backend, API development, backend architecture, ML integration, project coordination |
+| Shashwat Tiwari | Frontend Developer & Explainability| React dashboard, UI components, frontend integration, SHAP explanation display, retention logic  |
+| Radhika Gupta | ML Developer | Model training, evaluation, ML pipeline, model performance analysis |
 | Samia Khan | Data Analyst | Data cleaning, EDA, feature engineering |
-| Prakash Dixit | Explainability & Logic | SHAP implementation, retention rules, documentation |
-
+| Prakash Dixit | Frontend Developer| Frontend development, dashboard integration, data visualization |
 ---
 
 ## Project Structure
