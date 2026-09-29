@@ -2,26 +2,25 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import List
 import pickle
-from pathlib import Path
 from config import MODEL_PATH, ALLOWED_ORIGINS, API_HOST, API_PORT
 from database import db
 from explain_prediction import ChurnExplainer
 import logging
+from fastapi import UploadFile, File
+import tempfile
+import os
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
 app = FastAPI(
     title="Churn Analysis API",
     description="Predict customer churn with explainable AI",
     version="1.0.0"
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -30,29 +29,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load model and explainer at startup
 model = None
 explainer = None
 
-@app.on_event("startup")
+@app.onevent("startup")
 async def startup_event():
-    """Initialize model and explainer on startup"""
     global model, explainer
     try:
-        # Load model
         with open(MODEL_PATH, 'rb') as f:
             model = pickle.load(f)
         logger.info("✓ Model loaded successfully")
 
-        # Initialize explainer
         explainer = ChurnExplainer(MODEL_PATH)
-        logger.info("✓ Explainer initialized successfully")
+        logger.info(" Explainer initialized successfully")
     except Exception as e:
         logger.error(f"Error during startup: {e}")
         raise
 
-
-# Pydantic models for request/response
 class CustomerData(BaseModel):
 
     SeniorCitizen: int
@@ -90,9 +83,6 @@ class HealthResponse(BaseModel):
     model_loaded: bool
     explainer_loaded: bool
 
-
-# API Endpoints
-
 @app.get("/", response_model=HealthResponse)
 async def health_check():
     return {
@@ -100,7 +90,6 @@ async def health_check():
         "model_loaded": model is not None,
         "explainer_loaded": explainer is not None
     }
-
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(customer: CustomerData):
@@ -110,16 +99,12 @@ async def predict(customer: CustomerData):
         if explainer is None:
             raise HTTPException(status_code=500, detail="Explainer not loaded")
 
-        # Convert to dict
         customer_dict = customer.dict()
         
-        # Get explanation
         explanation = explainer.explain_prediction(customer_dict)
         
-        # Get recommendation
         recommendation = explainer.get_recommendation(explanation['top_reasons'])
 
-        # Determine confidence
         prob = explanation['churn_probability']
         if prob > 0.7:
             confidence = "high"
@@ -128,7 +113,6 @@ async def predict(customer: CustomerData):
         else:
             confidence = "low"
 
-        # Save to database
         customer_id = f"CUST_{id(customer_dict)}"
         db.save_prediction(
             customer_id=customer_id,
@@ -154,9 +138,7 @@ async def predict(customer: CustomerData):
 
 @app.get("/dashboard-stats")
 async def dashboard_stats():
-    """Get dashboard statistics"""
     try:
-        # Get recent predictions
         recent = db.get_recent_predictions(limit=5)
         
         if not recent:
@@ -167,8 +149,7 @@ async def dashboard_stats():
                 "recent_predictions": []
             }
 
-        # Calculate stats
-        predictions = [r[2] for r in recent]  # churn_probability column
+        predictions = [r[2] for r in recent]  
         high_risk = len([p for p in predictions if p > 0.7])
 
         return {
@@ -229,19 +210,14 @@ async def model_info():
     }
 
 
-# Error handlers
-
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
-    """Handle general exceptions"""
     logger.error(f"Unhandled exception: {exc}")
     return {
         "error": "Internal server error",
         "detail": str(exc)
     }
 
-
-# Main entry point
 
 if __name__ == "__main__":
     import uvicorn

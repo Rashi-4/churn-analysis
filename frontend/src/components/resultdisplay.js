@@ -1,5 +1,5 @@
 import React from 'react';
-import './ResultDisplay.css';
+import './resultdisplay.css';
 
 function ResultDisplay({ prediction }) {
   const getRiskColor = (probability) => {

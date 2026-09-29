@@ -1,7 +1,3 @@
-"""
-Database operations for storing predictions
-"""
-
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -13,12 +9,11 @@ class Database:
         self.setup_database()
 
     def get_connection(self):
-        """Get database connection"""
         return sqlite3.connect(self.db_path)
 
     def setup_database(self):
-        """Create tables if they don't exist"""
-        conn = self.get_connection()
+        
+        conn = self.get_connection()  #open database file
         cursor = conn.cursor()
 
         # Predictions table

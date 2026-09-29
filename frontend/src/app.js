@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import PredictionForm from './components/PredictionForm';
-import ResultDisplay from './components/ResultDisplay';
+import './app.css';
+import PredictionForm from './components/predictionform';
+import ResultDisplay from './components/resultdisplay';
 
 function App() {
   const [prediction, setPrediction] = useState(null);
@@ -9,7 +9,6 @@ function App() {
   const [error, setError] = useState(null);
   const [apiStatus, setApiStatus] = useState(null);
 
-  // Check API status on mount
   useEffect(() => {
     checkApiStatus();
   }, []);
@@ -38,7 +37,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(customerData),
+        body: JSON.stringify(customerData), //converts javascript object to JSON string
       });
 
       if (!response.ok) {
@@ -58,7 +57,7 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>🎯 Churn Analysis Dashboard</h1>
+        <h1>Churn Analysis Dashboard</h1>
         <p>Predict customer churn and get actionable retention strategies</p>
         <div className={`status ${apiStatus}`}>
           API Status: {apiStatus === 'running' ? '🟢 Online' : '🔴 Offline'}

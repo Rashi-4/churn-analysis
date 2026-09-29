@@ -51,26 +51,22 @@ class DataPreparation:
         """Clean data"""
         print("\n=== DATA CLEANING ===")
 
-        # Remove duplicate rows
         initial_shape = self.df.shape[0]
         self.df = self.df.drop_duplicates()
         print(f"Removed {initial_shape - self.df.shape[0]} duplicate rows")
 
-        # Handle missing values
         missing_count = self.df.isnull().sum().sum()
         if missing_count > 0:
             print(f"Found {missing_count} missing values")
-            # Fill numerical with mean
+           
             for col in self.df.select_dtypes(include=[np.number]).columns:
                 self.df[col] = self.df[col].fillna(self.df[col].median())
 
-            # Fill categorical with mode
             for col in self.df.select_dtypes(include=['object']).columns:
                 self.df[col].fillna(self.df[col].mode()[0], inplace=True)
         else:
             print("No missing values found")
 
-        # Remove irrelevant columns
         cols_to_drop = ['customerID']
         cols_to_drop = [col for col in cols_to_drop if col in self.df.columns]
         if cols_to_drop:
@@ -83,10 +79,8 @@ class DataPreparation:
         """Encode categorical variables"""
         print("\n=== ENCODING CATEGORICAL VARIABLES ===")
 
-        # Find categorical columns
         categorical_cols = self.df.select_dtypes(include=['object']).columns.tolist()
         
-        # Remove Churn from encoding (will handle separately)
         if 'Churn' in categorical_cols:
             categorical_cols.remove('Churn')
 

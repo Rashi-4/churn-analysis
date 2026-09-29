@@ -17,40 +17,33 @@ class ChurnExplainer:
         print(f"Loading model from {model_path}...")
         with open(model_path, 'rb') as f:
             self.model = pickle.load(f)
-        print("✓ Model loaded")
+        print(" Model loaded")
 
-        # Load training data for SHAP
         train_data = pd.read_csv(TRAIN_DATA_PATH)
         self.X_train = train_data.drop('Churn', axis=1)
 
-        # Create SHAP explainer
         print("Initializing SHAP explainer...")
         if isinstance(self.model, (RandomForestClassifier, GradientBoostingClassifier)):
           self.explainer = shap.TreeExplainer(self.model)
         else:
           self.explainer = shap.Explainer(self.model, self.X_train)
 
-        print("✓ SHAP explainer ready")
+        print(" SHAP explainer ready")
 
     def explain_prediction(self, customer_data):
-        """Explain prediction for a customer"""
-        # Convert to DataFrame if dict
         if isinstance(customer_data, dict):
             customer_df = pd.DataFrame([customer_data])
         else:
             customer_df = customer_data
 
-        # Get prediction
         prediction = self.model.predict(customer_df)[0]
         prediction_proba = self.model.predict_proba(customer_df)[0]
         churn_probability = prediction_proba[1]  # Probability of churn
 
-        # Get SHAP explanation
         shap_output = self.explainer(customer_df)
         
-        # Extract feature names and SHAP values
         feature_names = customer_df.columns.tolist()
-        if hasattr(shap_output, "values"):
+        if hasattr(shap_output, "values"): #checks if object contains a specific attribute
             values = shap_output.values
             if len(values.shape) == 3:
                shap_value = values[0, :, 1]
@@ -58,8 +51,7 @@ class ChurnExplainer:
                 shap_value = values[0]
         else:
            shap_value = shap_output[0]
-       
-        # Create reasons list
+        
         reasons = []
         for i in range(len(feature_names)):
             reasons.append({
@@ -68,10 +60,8 @@ class ChurnExplainer:
                 'customer_value': float(customer_df.iloc[0, i])
             })
 
-        # Sort by absolute impact
         reasons = sorted(reasons, key=lambda x: abs(x['impact']), reverse=True)
 
-        # Convert to plain language
         plain_reasons = self.convert_to_plain_language(reasons[:3])
 
         return {
@@ -82,7 +72,7 @@ class ChurnExplainer:
         }
 
     def convert_to_plain_language(self, reasons):
-        """Convert SHAP values to plain business language"""
+       
         plain_reasons = []
 
         for reason in reasons:
@@ -107,7 +97,7 @@ class ChurnExplainer:
         return plain_reasons
 
     def get_recommendation(self, reasons):
-        """Get retention recommendation based on reasons"""
+       
         if not reasons:
             return "Contact for customer satisfaction survey"
 
