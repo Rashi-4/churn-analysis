@@ -1,120 +1,262 @@
-.App {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f7fb;
+  color: #172033;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+/* HEADER */
+
+.app-header {
+  background: #111827;
+  color: white;
+  padding: 28px 7%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+.app-header p {
+  margin: 5px 0 0;
+  color: #aeb8ca;
+  font-size: 14px;
+}
+
+.api-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+/* TABS */
+
+.tabs {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 7%;
+  display: flex;
+  gap: 8px;
+}
+
+.tabs button {
+  border: none;
+  background: transparent;
+  padding: 17px 20px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.tabs button:hover {
+  color: #4f46e5;
+}
+
+.tabs button.active {
+  color: #4f46e5;
+  border-bottom-color: #4f46e5;
+}
+
+/* MAIN */
+
+.main-content {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 45px 24px 70px;
+}
+
+.page-intro {
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  color: #6366f1;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.page-intro h2 {
+  margin: 8px 0 8px;
+  font-size: 32px;
+  letter-spacing: -0.8px;
+}
+
+.page-intro p {
+  margin: 0;
+  max-width: 650px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* SINGLE PREDICTION */
+
+.single-layout {
+  display: grid;
+  grid-template-columns: minmax(350px, 0.9fr) minmax(350px, 1.1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* ERROR */
+
+.error-message {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  padding: 18px;
+  border-radius: 12px;
+}
+
+.error-message strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.error-message p {
+  margin: 0;
+}
+
+/* LOADING */
+
+.loading-card,
+.empty-result {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 50px 30px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04);
+}
+
+.loading-card h3,
+.empty-result h3 {
+  margin: 15px 0 8px;
+}
+
+.loading-card p,
+.empty-result p {
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 450px;
+}
+
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid #e0e7ff;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  margin: auto;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-  
+}
+
+.empty-icon {
+  width: 52px;
+  height: 52px;
+  margin: auto;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
+
+/* FOOTER */
+
+.app-footer {
+  text-align: center;
+  padding: 25px;
+  color: #94a3b8;
+  font-size: 12px;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
   .app-header {
-    text-align: center;
-    color: white;
-    padding: 40px 20px;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
+    padding: 24px;
   }
-  
-  .app-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+  .api-status {
+    display: none;
   }
-  
-  .app-header p {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    opacity: 0.9;
+
+  .tabs {
+    padding: 0 12px;
+    overflow-x: auto;
   }
-  
-  .status {
-    display: inline-block;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    transition: all 0.3s ease;
+
+  .main-content {
+    padding: 35px 18px;
   }
-  
-  .status.running {
-    background: rgba(76, 175, 80, 0.3);
-    color: #4caf50;
+
+  .single-layout {
+    grid-template-columns: 1fr;
   }
-  
-  .status.offline {
-    background: rgba(244, 67, 54, 0.3);
-    color: #f44336;
+
+  .page-intro h2 {
+    font-size: 27px;
   }
-  
-  .app-main {
-    flex: 1;
-    padding: 40px 20px;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    align-items: start;
-  }
-  
-  @media (max-width: 768px) {
-    .container {
-      grid-template-columns: 1fr;
-    }
-  
-    .app-header h1 {
-      font-size: 1.8rem;
-    }
-  }
-  
-  .error-message {
-    grid-column: 1 / -1;
-    padding: 20px;
-    background: rgba(244, 67, 54, 0.9);
-    color: white;
-    border-radius: 10px;
-    font-weight: bold;
-    text-align: center;
-    animation: slideIn 0.3s ease;
-  }
-  
-  .loading {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    color: white;
-  }
-  
-  .spinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .app-footer {
-    text-align: center;
-    padding: 20px;
-    color: rgba(255, 255, 255, 0.7);
-    background: rgba(0, 0, 0, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
+}

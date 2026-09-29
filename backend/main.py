@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException,UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
@@ -8,9 +8,10 @@ from config import MODEL_PATH, ALLOWED_ORIGINS, API_HOST, API_PORT
 from database import db
 from explain_prediction import ChurnExplainer
 import logging
-from fastapi import UploadFile, File
 import tempfile
 import os
+from fastapi.responses import FileResponse
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ app.add_middleware(
 model = None
 explainer = None
 
-@app.onevent("startup")
+@app.on_event("startup")
 async def startup_event():
     global model, explainer
     try:
@@ -194,11 +195,186 @@ async def get_predictions(limit: int = 10):
         logger.error(f"Retrieval error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/upload-dataset")
+async def upload_dataset(file: UploadFile = File(...)):
+    tmp_path = None
 
+    try:
+        
+        if not file.filename:
+            raise HTTPException(
+                status_code=400,
+                detail="No file uploaded"
+            )
+
+        
+        if not file.filename.lower().endswith(".csv"):
+            raise HTTPException(
+                status_code=400,
+                detail="Please upload a CSV file"
+            )
+
+       
+        contents = await file.read()
+
+       
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".csv"
+        ) as tmp:
+            tmp.write(contents)
+            tmp_path = tmp.name
+
+       
+        df = pd.read_csv(tmp_path)
+
+        
+        required_columns = [
+            "SeniorCitizen",
+            "tenure",
+            "MonthlyCharges",
+            "TotalCharges",
+            "gender_encoded",
+            "Partner_encoded",
+            "Dependents_encoded",
+            "PhoneService_encoded",
+            "MultipleLines_encoded",
+            "InternetService_encoded",
+            "OnlineSecurity_encoded",
+            "OnlineBackup_encoded",
+            "DeviceProtection_encoded",
+            "TechSupport_encoded",
+            "StreamingTV_encoded",
+            "StreamingMovies_encoded",
+            "Contract_encoded",
+            "PaperlessBilling_encoded",
+            "PaymentMethod_encoded"
+        ]
+
+      
+        missing_columns = [
+            column
+            for column in required_columns
+            if column not in df.columns
+        ]
+
+        if missing_columns:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": "Dataset is missing required columns",
+                    "missing_columns": missing_columns,
+                    "required_columns": required_columns
+                }
+            )
+
+      
+        prediction_df = df[required_columns].copy()
+
+
+        predictions = []
+
+        for index, row in prediction_df.iterrows():
+
+            customer_dict = row.to_dict()
+
+            explanation = explainer.explain_prediction(
+                customer_dict
+            )
+
+            predictions.append({
+                "row_number": index + 1,
+                "churn_probability": explanation[
+                    "churn_probability"
+                ],
+                "prediction": (
+                    "Churn"
+                    if explanation["prediction"] == 1
+                    else "No Churn"
+                ),
+                "top_reason": (
+                    explanation["top_reasons"][0]["plain_text"]
+                    if explanation["top_reasons"]
+                    else "Unknown"
+                ),
+                "recommendation": (
+                    explainer.get_recommendation(
+                        explanation["top_reasons"]
+                    )
+                )
+            })
+
+       
+        high_risk_count = sum(
+            1 for prediction in predictions
+            if prediction["churn_probability"] > 0.7
+        )
+
+        medium_risk_count = sum(
+            1 for prediction in predictions
+            if 0.4 < prediction["churn_probability"] <= 0.7
+        )
+
+        low_risk_count = sum(
+            1 for prediction in predictions
+            if prediction["churn_probability"] <= 0.4
+        )
+
+       
+        results_df = pd.DataFrame(predictions)
+
+        results_path = "/tmp/churn_predictions.csv"
+
+        results_df.to_csv(
+            results_path,
+            index=False
+        )
+
+        return {
+            "success": True,
+            "total_rows": len(predictions),
+            "high_risk_count": high_risk_count,
+            "medium_risk_count": medium_risk_count,
+            "low_risk_count": low_risk_count,
+            "predictions": predictions[:10]
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        logger.error(
+            f"Dataset upload error: {e}"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+    finally:
+       
+        if tmp_path and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+@app.get("/download-results")
+async def download_results():
+    results_path = "/tmp/churn_predictions.csv"
+
+    if not os.path.exists(results_path):
+        raise HTTPException(
+            status_code=404,
+            detail="No prediction results available. Upload a dataset first."
+        )
+
+    return FileResponse(
+        results_path,
+        media_type="text/csv",
+        filename="churn_predictions.csv"
+    )
 @app.get("/model-info")
 async def model_info():
     return {
-        "model_type": "Gradient Boosting Classifier",
+        "model_type": "Logistic Regression",
         "f1_score": 0.5945,
         "recall": 0.5508,
         "precision": 0.6458,
