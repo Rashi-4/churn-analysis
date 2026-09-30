@@ -1,286 +1,231 @@
-# Churn Analysis: Explainable AI for Customer Retention
+# ChurnGuard AI
 
-## Project Overview
+An end-to-end **customer churn prediction and explainability system** built with machine learning, FastAPI, React, SHAP, and SQLite.
 
-An end-to-end machine learning system that predicts customer churn, explains predictions using SHAP, and recommends personalized retention actions. Built with Python, FastAPI, and React.
+The project predicts customer churn probability, identifies the factors influencing predictions, and provides rule-based retention recommendations. It supports both **individual customer prediction** and **batch analysis of raw customer datasets**.
 
-### Key Features
-- **Churn Prediction**: 78% F1-score using Gradient Boosting
-- **Explainability**: SHAP-based explanations in plain business language
-- **Automated Recommendations**: Personalized retention actions
-- **User-Friendly Dashboard**: React-based interface for non-technical users
-- **Production Ready**: Deployable on free cloud platforms
+## Features
 
-### Problem Statement
-Existing churn prediction systems provide scores without explaining why customers will leave or what to do about it. Our system bridges this gap by combining predictions with interpretable explanations and actionable recommendations.
+* **Single Customer Prediction** — predict churn probability from customer details.
+* **Explainable AI** — SHAP-based identification of important prediction factors.
+* **Risk Classification** — High, Medium, and Low churn-risk categories.
+* **Batch Dataset Analysis** — upload the raw Telco Customer Churn CSV and analyze multiple customers.
+* **Retention Recommendations** — rule-based suggestions based on influential factors.
+* **React Dashboard** — view prediction statistics and recent results.
+* **REST API** — FastAPI endpoints for prediction and dataset analysis.
+* **SQLite Storage** — stores prediction records and recommendations.
+* **Downloadable Results** — export batch predictions as CSV.
 
-### Solution
-A complete ML pipeline that:
-1. Predicts which customers will churn
-2. Explains top factors driving each prediction
-3. Recommends specific retention actions
-4. Displays everything through an easy-to-use dashboard
+## Workflow
 
----
+```text
+Raw Customer Data
+       ↓
+Data Preprocessing
+       ↓
+Feature Encoding
+       ↓
+ML Model
+       ↓
+Churn Probability
+       ↓
+SHAP Explanation
+       ↓
+Risk Classification
+       ↓
+Retention Recommendation
+       ↓
+FastAPI Backend
+       ↓
+React Dashboard
+```
+
+## Machine Learning
+
+Three models were evaluated:
+
+* Logistic Regression
+* Random Forest
+* Gradient Boosting
+
+### Model Performance
+
+| Model               | Accuracy | Precision | Recall |         F1 |    ROC-AUC |
+| ------------------- | -------: | --------: | -----: | ---------: | ---------: |
+| Logistic Regression |   80.06% |    64.58% | 55.08% | **59.45%** |     84.06% |
+| Random Forest       |   79.77% |    65.19% | 51.07% |     57.27% | **84.17%** |
+| Gradient Boosting   |   79.49% |    64.31% | 51.07% |     56.93% |     83.36% |
+
+**Selected model: Logistic Regression**, based on the highest F1-score among the evaluated models.
+
+The model achieved:
+
+* **Accuracy:** 80.06%
+* **Precision:** 64.58%
+* **Recall:** 55.08%
+* **F1-score:** 59.45%
+* **ROC-AUC:** 84.06%
+
+## Batch Analysis
+
+The system accepts the original Telco Customer Churn CSV and performs preprocessing and prediction automatically.
+
+The complete dataset of **7,043 customers** was successfully processed.
+
+```text
+Total Customers : 7043
+High Risk       : 430
+Medium Risk     : 1664
+Low Risk        : 4949
+```
+
+## Explainability
+
+SHAP is used to identify the features contributing to individual predictions.
+
+Examples of influential features include:
+
+* Tenure
+* Monthly Charges
+* Contract
+* Internet Service
+* Online Security
+* Payment Method
+
+SHAP values are treated as model contributions rather than percentage changes or causal effects.
 
 ## Tech Stack
 
-**Backend:**
-- Python 3.10+
-- scikit-learn (ML models)
-- SHAP (Explainability)
-- FastAPI (API server)
-- Uvicorn (WSGI server)
-- SQLite (Database)
+**Machine Learning**
 
-**Frontend:**
-- React.js
-- Node.js / npm
-- CSS3
+* Python
+* Pandas
+* NumPy
+* Scikit-learn
+* SHAP
 
-**Tools & Infrastructure:**
-- Git / GitHub (Version control)
-- Jupyter Notebook (Exploration)
-- Pandas / NumPy (Data processing)
+**Backend**
 
----
+* FastAPI
+* Uvicorn
+* Pydantic
+* SQLite
 
-## Team Members & Roles
-| Name | Role | Responsibilities |
-|------|------|------------------|
-| Rashi Arora | Team Lead & Backend Developer | FastAPI backend, API development, backend architecture, ML integration, project coordination |
-| Shashwat Tiwari | Frontend Developer & Explainability| React dashboard, UI components, frontend integration, SHAP explanation display, retention logic  |
-| Radhika Gupta | ML Developer | Model training, evaluation, ML pipeline, model performance analysis |
-| Samia Khan | Data Analyst | Data cleaning, EDA, feature engineering |
-| Prakash Dixit | Frontend Developer| Frontend development, dashboard integration, data visualization |
----
+**Frontend**
+
+* React
+* JavaScript
+* HTML
+* CSS
+
+**Tools**
+
+* Git
+* GitHub
+* VS Code
+* Jupyter Notebook
 
 ## Project Structure
-├── backend/ # FastAPI application
-│ ├── main.py # API endpoints
-│ ├── data_preparation.py
-│ ├── train_model.py
-│ ├── explain_prediction.py
-│ ├── database.py
-│ └── config.py
-├── frontend/ # React dashboard
-│ ├── src/
-│ ├── public/
-│ └── package.json
-├── data/ # Raw and processed data
-├── models/ # Trained ML models
-├── notebooks/ # Jupyter exploration
-├── docs/ # Documentation
+
+```text
+ChurnAnalysis/
+├── backend/
+│   ├── config.py
+│   ├── data_preparation.py
+│   ├── database.py
+│   ├── explain_prediction.py
+│   ├── main.py
+│   └── train_model.py
+│
+├── data/
+│   ├── encoders.pkl
+│   └── feature_names.pkl
+│
+├── models/
+│   └── churn_model.pkl
+│
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── app.js
+│       └── app.css
+│
+├── docs/
+├── requirements.txt
+├── .gitignore
 └── README.md
+```
 
+## My Contribution — Rashi Arora
 
----
+**Team Lead & Backend Developer**
 
-## Getting Started
+* Designed and implemented the FastAPI backend
+* Developed prediction and batch-analysis APIs
+* Integrated the ML model with the backend
+* Integrated SHAP explainability
+* Implemented raw CSV preprocessing for batch inference
+* Implemented SQLite prediction storage
+* Added backend validation, logging, and error handling
+* Integrated frontend and backend components
+* Coordinated integration across the team
 
-### Prerequisites
-- Python 3.10 or higher
-- Node.js 14 or higher
-- Git
-- GitHub account
+## Team
 
-### Installation
+| Member              | Role                                |
+| ------------------- | ----------------------------------- |
+| **Rashi Arora**     | Team Lead & Backend Developer       |
+| **Shashwat Tiwari** | Frontend Developer 
+| **Radhika Gupta**   | ML Developer and Explainability                       |
+| **Samia Khan**      | Data Analyst                        |
+| **Prakash Dixit**   | Frontend Developer                  |
 
-**1. Clone Repository**
+## Run Locally
+
+### Backend
+
 ```bash
-git clone https://github.com/YOUR-USERNAME/churn-analysis.git
+git clone git@github.com:Rashi-4/churn-analysis.git
 cd churn-analysis
-```
 
-**2. Install Python Dependencies**
-```bash
+python3 -m venv venv
+source venv/bin/activate
+
 pip install -r requirements.txt
+
+python backend/main.py
 ```
 
-**3. Download Dataset**
-- Download Telco Customer Churn dataset from Kaggle
-- Extract to `data/` folder
-- File should be named: `WA_Fn-UseC_-Telco-Customer-Churn.csv`
+Backend:
 
-**4. Prepare Data & Train Model**
-```bash
-cd backend
-python data_preparation.py
-python train_model.py
+```text
+http://127.0.0.1:8000
 ```
 
-**5. Install Frontend Dependencies**
+API documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### Frontend
+
 ```bash
 cd frontend
 npm install
-```
-
-**6. Start Backend Server**
-```bash
-cd backend
-python main.py
-```
-
-Backend runs at: `http://localhost:8000`
-
-**7. Start Frontend Server**
-```bash
-cd frontend
 npm start
 ```
 
-Frontend runs at: `http://localhost:3000`
+## Project Status
 
----
+**Functional Academic Project**
 
-## Usage
+The current implementation covers the complete workflow from customer data preprocessing and model inference to SHAP explainability, REST APIs, React visualization, database storage, and batch analysis.
 
-1. Open http://localhost:3000 in your browser
-2. Enter customer data (tenure, monthly charges, etc.)
-3. Click "Get Prediction"
-4. View:
-   - Churn probability (%)
-   - Top 3 risk factors with impact
-   - Recommended retention action
+## Repository
 
----
+[GitHub Repository](https://github.com/Rashi-4/churn-analysis)
 
-## API Endpoints
+## Disclaimer
 
-### GET `/`
-Health check. Returns API status.
-
-### POST `/predict`
-Make churn prediction for a customer.
-
-**Request:**
-```json
-{
-  "Tenure": 24,
-  "MonthlyCharges": 65.5,
-  "TotalCharges": 1572,
-  "ContractEncoded": 2
-}
-```
-
-**Response:**
-```json
-{
-  "churn_probability": 0.32,
-  "top_reasons": [
-    {"factor": "Monthly Charges", "impact": -0.15},
-    {"factor": "Tenure", "impact": -0.08},
-    {"factor": "Contract Type", "impact": 0.05}
-  ],
-  "recommendation": "Send satisfaction survey"
-}
-```
-
-### GET `/docs`
-Interactive API documentation (Swagger UI)
-
----
-
-## Results & Metrics
-
-- **Model Accuracy**: 78% F1-score
-- **Recall**: 80%+ (catches 80% of actual churners)
-- **Prediction Speed**: < 1 second per customer
-- **Top Churn Drivers**:
-  1. High monthly charges (35% impact)
-  2. Short tenure (25% impact)
-  3. Service complaints (20% impact)
-
----
-
-## Contributing
-
-### Branch Naming
-- `feature/what-you-doing` for new features
-- `bugfix/issue-name` for bug fixes
-- `docs/topic` for documentation
-
-### Workflow
-1. Create feature branch: `git checkout -b feature/my-feature`
-2. Make changes
-3. Commit: `git commit -m "Clear message"`
-4. Push: `git push origin feature/my-feature`
-5. Create Pull Request on GitHub
-6. Team reviews and merges
-
-See `docs/WORKFLOW.md` for detailed guide.
-
----
-
-## Deployment
-
-### Free Options
-- **Backend**: Render.com, Railway.app, Heroku
-- **Frontend**: Vercel, Netlify, GitHub Pages
-- **Database**: Any cloud provider with free tier
-
-### Deployment Steps
-1. Push code to GitHub
-2. Connect repository to Render/Vercel
-3. Configure environment variables
-4. Deploy (automatic or manual)
-
----
-
-## Troubleshooting
-
-**Backend won't start:**
-- Check if port 8000 is available
-- Verify all dependencies installed: `pip list`
-- Check error message in terminal
-
-**Frontend won't connect to backend:**
-- Ensure backend is running on `http://localhost:8000`
-- Check CORS settings in `backend/main.py`
-- Verify network connection
-
-**Model not found:**
-- Run `python train_model.py` first
-- Check `models/` folder has `.pkl` file
-
----
-
-## Future Enhancements
-
-- [ ] Real-time model retraining
-- [ ] Multiple model comparison
-- [ ] A/B testing framework
-- [ ] CRM integration
-- [ ] Mobile app
-- [ ] Multi-language support
-- [ ] Advanced analytics dashboard
-
----
-
-## References
-
-[1] Adekunle, B. I., et al. (2023). Improving Customer Retention Through Machine Learning.
-
-[2] Lundberg, S. M., & Lee, S. I. (2017). A Unified Approach to Interpreting Model Predictions.
-
-[3] Pedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python.
-
----
-
-## License
-
-MIT License - See LICENSE file for details
-
----
-
-## Contact
-
-For questions or collaboration:
-- Email: rashi.44arora@gmail.com
-- GitHub: @Rashi-4
-
----
-
-**Status**: 🚀 In Development - Phase 1 Complete
-
-Last Updated: September 2026
+This project is intended for educational and demonstration purposes. Churn predictions and retention recommendations should be treated as model outputs rather than definitive business decisions.
